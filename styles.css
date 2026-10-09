@@ -61,7 +61,7 @@ h1, h2 { font-weight: 400; color: var(--snow); line-height: 1.12; }
 .hero {
   position: relative; z-index: 2; flex: 1;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; padding: 72px var(--gutter) 22vh;
+  text-align: center; padding: 48px var(--gutter) 24px;
 }
 .hero h1 {
   font-size: clamp(38px, 7.2vw, 84px); letter-spacing: -0.03em;
@@ -73,7 +73,25 @@ h1, h2 { font-weight: 400; color: var(--snow); line-height: 1.12; }
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   padding-right: 0.06em; /* la cursiva no se recorta al final */
 }
-.lead { font-size: 15px; line-height: 1.7; color: var(--text); max-width: 520px; margin-bottom: 36px; }
+.lead { font-size: 16px; line-height: 1.7; color: var(--text); max-width: 560px; margin-bottom: 36px; text-wrap: balance; }
+.confianza {
+  display: inline-flex; align-items: center; gap: 12px; margin-top: 22px;
+  font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 2px; color: var(--muted);
+}
+.confianza::before, .confianza::after { content: ''; width: 20px; height: 1px; background: var(--dim); }
+
+/* ── Pilares ── */
+.pilares {
+  list-style: none; width: 100%; max-width: 980px; margin-top: 52px;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid rgba(237,255,254,0.08);
+  text-align: left;
+}
+.pilares li { padding: 26px 28px 8px; }
+.pilares li + li { border-left: 1px solid rgba(237,255,254,0.08); }
+.pilar-num { font-size: 10px; font-weight: 500; letter-spacing: 2px; color: var(--accent); }
+.pilares h2 { font-size: 16px; font-weight: 500; letter-spacing: -0.1px; margin: 10px 0 8px; }
+.pilares p { font-size: 13.5px; line-height: 1.65; color: var(--muted); }
 
 /* ── Botones ── */
 .btn {
@@ -95,9 +113,10 @@ h1, h2 { font-weight: 400; color: var(--snow); line-height: 1.12; }
 .btn:disabled { opacity: .5; cursor: default; }
 
 /* ── Gráfico decorativo ── */
+/* En el flujo, debajo del contenido: así nunca tapa texto, en ninguna altura de pantalla. */
 .chart {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 0;
-  height: 34vh; min-height: 180px; pointer-events: none;
+  position: relative; z-index: 0;
+  height: 20vh; min-height: 130px; pointer-events: none;
 }
 .chart svg { display: block; width: 100%; height: 100%; }
 .chart-area { fill: url(#g-area); opacity: 0; animation: aparecer 1.6s ease-out 1.2s forwards; }
@@ -164,6 +183,15 @@ h1, h2 { font-weight: 400; color: var(--snow); line-height: 1.12; }
   .hero { padding-top: 48px; }
   .form, .gracias { padding: 32px 20px 24px; }
   .foot { flex-direction: column; gap: 6px; align-items: center; }
+  .hero > .eyebrow { display: block; line-height: 1.8; letter-spacing: 2px; text-wrap: balance; }
+  .hero > .eyebrow .eyebrow-dot { display: none; }
+  .confianza { letter-spacing: 1.6px; line-height: 1.8; text-wrap: balance; }
+  .confianza::before, .confianza::after { display: none; }
+}
+@media (max-width: 780px) {
+  .pilares { grid-template-columns: 1fr; margin-top: 56px; }
+  .pilares li { padding: 22px 4px 18px; }
+  .pilares li + li { border-left: 0; border-top: 1px solid rgba(237,255,254,0.08); }
 }
 
 @media (prefers-reduced-motion: reduce) {
