@@ -1,11 +1,12 @@
 (function () {
   'use strict';
 
-  // endpoint: URL /exec de la aplicación web de Apps Script (apps-script/Codigo.gs).
-  // token: tiene que ser idéntico a TOKEN en Codigo.gs.
+  // Envío del formulario con FormSubmit (https://formsubmit.co).
+  // Los mensajes llegan a contact@sfinance.world. La primera vez FormSubmit
+  // envía un correo de activación a esa casilla: hay que confirmarlo.
   var CONFIG = {
-    endpoint: '',
-    token: 'ahCGWKUtPDVMx3doMv17THrBoZSDUazD'
+    endpoint: 'https://formsubmit.co/ajax/contact@sfinance.world',
+    asunto: 'Nuevo mensaje desde sfinance.world'
   };
 
   var EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -98,9 +99,7 @@
     if (!mensaje) return avisar(f.mensaje, 'Escribe tu mensaje.');
 
     // Trampa para bots: si viene rellena, fingimos éxito y no enviamos nada.
-    if (f.web.value) return terminar();
-
-    if (!CONFIG.endpoint) return avisar(null, 'El formulario todavía no está activo.');
+    if (f.web && f.web.value) return terminar();
 
     form.dataset.enviando = '1';
     btn.disabled = true;
@@ -109,27 +108,28 @@
     var ctrl = 'AbortController' in window ? new AbortController() : null;
     var reloj = setTimeout(function () { if (ctrl) ctrl.abort(); }, 15000);
 
-    // Content-Type text/plain a propósito: mantiene la petición "simple" para
-    // que el navegador no lance el preflight OPTIONS, que Apps Script no
-    // responde. Con application/json el formulario falla en producción.
     fetch(CONFIG.endpoint, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
       body: JSON.stringify({
-        form: 'contacto',
-        token: CONFIG.token,
         nombre: nombre,
         email: email,
         mensaje: mensaje,
-        pagina: location.href
+        pagina: location.href,
+        _subject: CONFIG.asunto,
+        _template: 'table'
       }),
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       signal: ctrl ? ctrl.signal : undefined
     }).then(function (r) {
       return r.json();
     }).then(function (j) {
       clearTimeout(reloj);
-      // Solo un ok explícito cuenta como enviado: un fetch resuelto no basta.
-      if (j && j.ok) terminar(); else fallar();
+      // FormSubmit responde success como texto ("true") o booleano.
+      if (j && (j.success === true || j.success === 'true')) terminar();
+      else fallar();
     }).catch(function () {
       clearTimeout(reloj);
       fallar();
